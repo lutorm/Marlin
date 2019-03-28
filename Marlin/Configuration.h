@@ -790,7 +790,7 @@
  */
 #define X_PROBE_OFFSET_FROM_EXTRUDER 0  // X offset: -left  +right  [of the nozzle]
 #define Y_PROBE_OFFSET_FROM_EXTRUDER 0  // Y offset: -front +behind [the nozzle]
-#define Z_PROBE_OFFSET_FROM_EXTRUDER -1.5   // Z offset: -below +above  [the nozzle]
+#define Z_PROBE_OFFSET_FROM_EXTRUDER -1.2   // Z offset: -below +above  [the nozzle]
 
 // Certain types of probes need to stay away from edges
 #define MIN_PROBE_EDGE 10
@@ -823,16 +823,16 @@
  * Example: `M851 Z-5` with a CLEARANCE of 4  =>  9mm from bed to nozzle.
  *     But: `M851 Z+1` with a CLEARANCE of 2  =>  2mm from bed to nozzle.
  */
-#define Z_CLEARANCE_DEPLOY_PROBE   10 // Z Clearance for Deploy/Stow
+#define Z_CLEARANCE_DEPLOY_PROBE   5 // Z Clearance for Deploy/Stow
 #define Z_CLEARANCE_BETWEEN_PROBES  5 // Z Clearance between probe points
 #define Z_CLEARANCE_MULTI_PROBE     5 // Z Clearance between multiple probes
 //#define Z_AFTER_PROBING           5 // Z position after probing is done
 
-#define Z_PROBE_LOW_POINT          -2 // Farthest distance below the trigger-point to go before stopping
+#define Z_PROBE_LOW_POINT          0 // Farthest distance below the trigger-point to go before stopping
 
 // For M851 give a range for adjusting the Z probe offset
 #define Z_PROBE_OFFSET_RANGE_MIN -2
-#define Z_PROBE_OFFSET_RANGE_MAX 0
+#define Z_PROBE_OFFSET_RANGE_MAX 5
 
 // Enable the M48 repeatability test to test probe accuracy
 #define Z_MIN_PROBE_REPEATABILITY_TEST
@@ -891,16 +891,16 @@
 // @section machine
 
 // The size of the print bed
-#define X_BED_SIZE 300
-#define Y_BED_SIZE 300
+#define X_BED_SIZE (((300 + 0))<(280)?((300 + 0)):(280))
+#define Y_BED_SIZE (((303 + 0))<(280)?((303 + 0)):(280))
 
 // Travel limits (mm) after homing, corresponding to endstop positions.
-#define X_MIN_POS -20
-#define Y_MIN_POS -17
-#define Z_MIN_POS 0
-#define X_MAX_POS 293
-#define Y_MAX_POS 303
-#define Z_MAX_POS 270
+#define X_MIN_POS (-20 + 0)
+#define Y_MIN_POS (-20 + 0)
+#define Z_MIN_POS (0 + 0)
+#define X_MAX_POS (300 + 0)
+#define Y_MAX_POS (303 + 0)
+#define Z_MAX_POS (270 + 0)
 
 /**
  * Software Endstops
@@ -1036,14 +1036,21 @@
   #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
 
   // Set the boundaries for probing (where the probe can reach).
-  #define LEFT_PROBE_BED_POSITION -7
-  #define RIGHT_PROBE_BED_POSITION 291
+  #define LEFT_PROBE_BED_POSITION -9
+  #define RIGHT_PROBE_BED_POSITION 288
   #define FRONT_PROBE_BED_POSITION -9
   #define BACK_PROBE_BED_POSITION 289
 
+  // Need to override probe min/max as well since it's outside of the bed
+  #define MIN_PROBE_X X_MIN_POS
+  #define MAX_PROBE_X X_MAX_POS
+  #define MIN_PROBE_Y Y_MIN_POS
+  #define MAX_PROBE_Y Y_MAX_POS
+
+
   // The Z probe minimum outer margin (to validate G29 parameters).
 //#define MIN_PROBE_EDGE 10
-  #define MIN_PROBE_EDGE 1
+//#define MIN_PROBE_EDGE 1
 
   // Probe along the Y axis, advancing X after each column
   //#define PROBE_Y_FIRST
@@ -1290,11 +1297,11 @@
  *    P1  Raise the nozzle always to Z-park height.
  *    P2  Raise the nozzle by Z-park amount, limited to Z_MAX_POS.
  */
-//#define NOZZLE_PARK_FEATURE
+#define NOZZLE_PARK_FEATURE
 
 #if ENABLED(NOZZLE_PARK_FEATURE)
   // Specify a park position as { X, Y, Z }
-  #define NOZZLE_PARK_POINT { (X_MIN_POS + 10), (Y_MAX_POS - 10), 20 }
+#define NOZZLE_PARK_POINT { 100, (303 + 0)-1, 20 }
   #define NOZZLE_PARK_XY_FEEDRATE 100   // X and Y axes feedrate in mm/s (also used for delta printers Z axis)
   #define NOZZLE_PARK_Z_FEEDRATE 5      // Z axis feedrate in mm/s (not used for delta printers)
 #endif
