@@ -1235,7 +1235,13 @@ void Planner::check_axes_activity() {
 
   #if FAN_COUNT > 0
 
-    #if FAN_KICKSTART_TIME > 0
+    #ifdef FAN_MIN_PWM
+      #define CALC_FAN_SPEED(f) (tail_fan_speed[f] ? ( FAN_MIN_PWM + (tail_fan_speed[f] * (65535 - FAN_MIN_PWM)) / 65535 ) : 0)
+    #else
+      #define CALC_FAN_SPEED(f) tail_fan_speed[f]
+    #endif
+
+    #ifdef FAN_KICKSTART_TIME
 
       static millis_t fan_kick_end[FAN_COUNT] = { 0 };
 
@@ -1279,7 +1285,22 @@ void Planner::check_axes_activity() {
       #endif
     #else
       #if HAS_FAN0
-        analogWrite(FAN_PIN, CALC_FAN_SPEED(0));
+        if (CALC_FAN_SPEED(0) == 0)
+        {
+            digitalWrite(FAN_PIN,LOW);
+        }
+        else
+        {
+            //analogWrite(FAN_PIN, CALC_FAN_SPEED(0));
+            SBI(TCCR4A, COM4C1);
+            uint16_t val = CALC_FAN_SPEED(0)*208 + 12495;
+            OCR4C = val; // set pwm duty, (2^8-1) is the top of the counter
+            //SERIAL_ECHOPGM("Calc fan ");
+            //SERIAL_ECHOLN(CALC_FAN_SPEED(0));
+            //SERIAL_ECHOPGM("Fan OCR4C ");
+            //SERIAL_ECHOLN(val);
+
+        }
       #endif
       #if HAS_FAN1
         analogWrite(FAN1_PIN, CALC_FAN_SPEED(1));
