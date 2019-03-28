@@ -60,11 +60,11 @@ HARDWARE_MOTHERBOARD ?= 11
 
 # Arduino source install directory, and version number
 # On most linuxes this will be /usr/share/arduino
-ARDUINO_INSTALL_DIR  ?= ${HOME}/Arduino
-ARDUINO_VERSION      ?= 106
+ARDUINO_INSTALL_DIR  ?= /Applications/Arduino.app/Contents/Java
+ARDUINO_VERSION      ?= 1612
 
 # You can optionally set a path to the avr-gcc tools. Requires a trailing slash. (ex: /usr/local/avr-gcc/bin)
-AVR_TOOLS_PATH ?=
+AVR_TOOLS_PATH ?= /opt/local/bin/
 
 #Programmer configuration
 UPLOAD_RATE        ?= 57600
