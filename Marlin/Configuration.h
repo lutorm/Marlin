@@ -717,7 +717,7 @@
 #define Z_MIN_PROBE_PIN 22
 
 /* Don't go lower than this when probing. */
-#define Z_MIN_PROBE_Z 0
+#define Z_MIN_PROBE_Z -1.5
 
 /**
  * Probe Type
@@ -800,7 +800,7 @@
  */
 #define X_PROBE_OFFSET_FROM_EXTRUDER 0  // X offset: -left  +right  [of the nozzle]
 #define Y_PROBE_OFFSET_FROM_EXTRUDER 0  // Y offset: -front +behind [the nozzle]
-#define Z_PROBE_OFFSET_FROM_EXTRUDER -1.2   // Z offset: -below +above  [the nozzle]
+#define Z_PROBE_OFFSET_FROM_EXTRUDER -1.35   // Z offset: -below +above  [the nozzle]
 
 // Certain types of probes need to stay away from edges
 #define MIN_PROBE_EDGE 10
@@ -834,15 +834,17 @@
  *     But: `M851 Z+1` with a CLEARANCE of 2  =>  2mm from bed to nozzle.
  */
 #define Z_CLEARANCE_DEPLOY_PROBE   5 // Z Clearance for Deploy/Stow
-#define Z_CLEARANCE_BETWEEN_PROBES  5 // Z Clearance between probe points
-#define Z_CLEARANCE_MULTI_PROBE     5 // Z Clearance between multiple probes
-//#define Z_AFTER_PROBING           5 // Z position after probing is done
+#define Z_CLEARANCE_BETWEEN_PROBES  3 // Z Clearance between probe points
+#define Z_CLEARANCE_MULTI_PROBE     1 // Z Clearance between multiple probes
+#define Z_AFTER_PROBING           5 // Z position after probing is done
 
-#define Z_PROBE_LOW_POINT          0 // Farthest distance below the trigger-point to go before stopping
+// This has to be <0 or it won't detect low points.
+// Unclear how it interacts with Z_MIN_PROBE...
+#define Z_PROBE_LOW_POINT          -1 // Farthest distance below the trigger-point to go before stopping
 
 // For M851 give a range for adjusting the Z probe offset
 #define Z_PROBE_OFFSET_RANGE_MIN -2
-#define Z_PROBE_OFFSET_RANGE_MAX 5
+#define Z_PROBE_OFFSET_RANGE_MAX 0
 
 // Enable the M48 repeatability test to test probe accuracy
 #define Z_MIN_PROBE_REPEATABILITY_TEST
@@ -879,7 +881,7 @@
 // For direct drive extruder v9 set to true, for geared extruder set to false.
 #define INVERT_E0_DIR true
 #define INVERT_E1_DIR true
-#define INVERT_E2_DIR true
+#define INVERT_E2_DIR false
 #define INVERT_E3_DIR false
 #define INVERT_E4_DIR false
 
@@ -901,16 +903,18 @@
 // @section machine
 
 // The size of the print bed
-#define X_BED_SIZE (((300 + 0))<(280)?((300 + 0)):(280))
-#define Y_BED_SIZE (((303 + 0))<(280)?((303 + 0)):(280))
+//#define X_BED_SIZE (((300 + 0))<(280)?((300 + 0)):(280))
+//#define Y_BED_SIZE (((303 + 0))<(280)?((303 + 0)):(280))
+#define X_BED_SIZE 297
+#define Y_BED_SIZE 297
 
 // Travel limits (mm) after homing, corresponding to endstop positions.
-#define X_MIN_POS (-20 + 0)
-#define Y_MIN_POS (-20 + 0)
+#define X_MIN_POS (-13 + 0)
+#define Y_MIN_POS (-13 + 0)
 #define Z_MIN_POS (0 + 0)
-#define X_MAX_POS (300 + 0)
-#define Y_MAX_POS (303 + 0)
-#define Z_MAX_POS (270 + 0)
+#define X_MAX_POS (306 + 0)
+#define Y_MAX_POS (307 + 0)
+#define Z_MAX_POS (250 + 0)
 
 /**
  * Software Endstops
@@ -997,15 +1001,15 @@
  */
 //#define AUTO_BED_LEVELING_3POINT
 //#define AUTO_BED_LEVELING_LINEAR
-#define AUTO_BED_LEVELING_BILINEAR
-//#define AUTO_BED_LEVELING_UBL
+//#define AUTO_BED_LEVELING_BILINEAR
+#define AUTO_BED_LEVELING_UBL
 //#define MESH_BED_LEVELING
 
 /**
  * Normally G28 leaves leveling disabled on completion. Enable
  * this option to have G28 restore the prior leveling state.
  */
-//#define RESTORE_LEVELING_AFTER_G28
+#define RESTORE_LEVELING_AFTER_G28
 
 /**
  * Enable detailed logging of G28, G29, M48, etc.
@@ -1029,11 +1033,11 @@
   /**
    * Enable the G26 Mesh Validation Pattern tool.
    */
-  //#define G26_MESH_VALIDATION
+  #define G26_MESH_VALIDATION
   #if ENABLED(G26_MESH_VALIDATION)
-    #define MESH_TEST_NOZZLE_SIZE    0.4  // (mm) Diameter of primary nozzle.
-    #define MESH_TEST_LAYER_HEIGHT   0.2  // (mm) Default layer height for the G26 Mesh Validation Tool.
-    #define MESH_TEST_HOTEND_TEMP  205.0  // (°C) Default nozzle temperature for the G26 Mesh Validation Tool.
+    #define MESH_TEST_NOZZLE_SIZE    0.8  // (mm) Diameter of primary nozzle.
+    #define MESH_TEST_LAYER_HEIGHT   0.5  // (mm) Default layer height for the G26 Mesh Validation Tool.
+    #define MESH_TEST_HOTEND_TEMP  240.0  // (°C) Default nozzle temperature for the G26 Mesh Validation Tool.
     #define MESH_TEST_BED_TEMP      60.0  // (°C) Default bed temperature for the G26 Mesh Validation Tool.
   #endif
 
@@ -1046,10 +1050,10 @@
   #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
 
   // Set the boundaries for probing (where the probe can reach).
-  #define LEFT_PROBE_BED_POSITION -9
-  #define RIGHT_PROBE_BED_POSITION 288
-  #define FRONT_PROBE_BED_POSITION -9
-  #define BACK_PROBE_BED_POSITION 289
+  #define LEFT_PROBE_BED_POSITION 1
+  #define RIGHT_PROBE_BED_POSITION 295
+  #define FRONT_PROBE_BED_POSITION 1
+  #define BACK_PROBE_BED_POSITION 295
 
   // Need to override probe min/max as well since it's outside of the bed
   #define MIN_PROBE_X X_MIN_POS
@@ -1092,7 +1096,7 @@
   //#define MESH_EDIT_GFX_OVERLAY   // Display a graphics overlay while editing the mesh
 
   #define MESH_INSET 1              // Set Mesh bounds as an inset region of the bed
-  #define GRID_MAX_POINTS_X 10      // Don't use more than 15 points per axis, implementation limited.
+  #define GRID_MAX_POINTS_X 7      // Don't use more than 15 points per axis, implementation limited.
   #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
 
   #define UBL_MESH_EDIT_MOVES_Z     // Sophisticated users prefer no movement of nozzle
@@ -1100,6 +1104,12 @@
 
   //#define UBL_Z_RAISE_WHEN_OFF_MESH 2.5 // When the nozzle is off the mesh, this value is used
                                           // as the Z-Height correction value.
+
+  // Need to override probe min/max as well since the homing point is outside of the bed
+  #define MIN_PROBE_X X_MIN_POS
+  #define MAX_PROBE_X X_MAX_POS
+  #define MIN_PROBE_Y Y_MIN_POS
+  #define MAX_PROBE_Y Y_MAX_POS
 
 #elif ENABLED(MESH_BED_LEVELING)
 
@@ -1163,7 +1173,7 @@
 // For DELTA this is the top-center of the Cartesian print volume.
 //#define MANUAL_X_HOME_POS 0
 //#define MANUAL_Y_HOME_POS 0
-//#define MANUAL_Z_HOME_POS 0
+#define MANUAL_Z_HOME_POS -0.25
 
 // Use "Z Safe Homing" to avoid homing with a Z probe outside the bed area.
 //
@@ -1177,8 +1187,8 @@
 #define Z_SAFE_HOMING
 
 #if ENABLED(Z_SAFE_HOMING)
-  #define Z_SAFE_HOMING_X_POINT (-19)    // X point for Z homing when homing all axis (G28).
-  #define Z_SAFE_HOMING_Y_POINT (258)    // Y point for Z homing when homing all axis (G28).
+  #define Z_SAFE_HOMING_X_POINT (-12)    // X point for Z homing when homing all axis (G28).
+  #define Z_SAFE_HOMING_Y_POINT (266)    // Y point for Z homing when homing all axis (G28).
 #endif
 
 // Homing speeds (mm/m)
