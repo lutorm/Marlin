@@ -338,17 +338,17 @@
 // The minimal temperature defines the temperature below which the heater will not be enabled It is used
 // to check that the wiring to the thermistor is not broken.
 // Otherwise this would lead to the heater being powered on all the time.
-#define HEATER_0_MINTEMP 5
-#define HEATER_1_MINTEMP 5
-#define HEATER_2_MINTEMP 5
-#define HEATER_3_MINTEMP 5
-#define HEATER_4_MINTEMP 5
-#define BED_MINTEMP 5
+#define HEATER_0_MINTEMP 15
+#define HEATER_1_MINTEMP 15
+#define HEATER_2_MINTEMP 15
+#define HEATER_3_MINTEMP 15
+#define HEATER_4_MINTEMP 15
+#define BED_MINTEMP 15
 
 // When temperature exceeds max temp, your heater will be switched off.
 // This feature exists to protect your hotend from overheating accidentally, but *NOT* from thermistor short/failure!
 // You should use MINTEMP for thermistor short/failure protection.
-#define HEATER_0_MAXTEMP 305
+#define HEATER_0_MAXTEMP 285
 #define HEATER_1_MAXTEMP 305
 #define HEATER_2_MAXTEMP 305
 #define HEATER_3_MAXTEMP 305
@@ -377,10 +377,20 @@
 
   // If you are using a pre-configured hotend then you can use one of the value sets by uncommenting it
 
+// titan Aero
+//    #define DEFAULT_Kp 21.00
+//      #define DEFAULT_Ki 1.78
+//      #define DEFAULT_Kd 61.93
+
+// Titan Aero w Volcano hotend (autotuned)
+#define DEFAULT_Kp 34.47
+#define DEFAULT_Ki 3.83
+#define DEFAULT_Kd 77.65
+
 // LulzBot AO-Hexagon (24v)
-      #define DEFAULT_Kp 28.79
-      #define DEFAULT_Ki 1.91
-      #define DEFAULT_Kd 108.51
+//#define DEFAULT_Kp 28.79
+//    #define DEFAULT_Ki 1.91
+//    #define DEFAULT_Kd 108.51
 
   // Ultimaker
   //#define DEFAULT_Kp 22.2
@@ -616,14 +626,14 @@
  * Override with M92
  *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4]]]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 100.5, 100.5, 1600, 830 }
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 100.5, 100.5, 1600, 420 }
 
 /**
  * Default Max Feed Rate (mm/s)
  * Override with M203
  *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4]]]]
  */
-#define DEFAULT_MAX_FEEDRATE          { 800, 800, 3, 40 }
+#define DEFAULT_MAX_FEEDRATE          { 300, 300, 3, 25 }
 
 /**
  * Default Max Acceleration (change/s) change = mm/s
