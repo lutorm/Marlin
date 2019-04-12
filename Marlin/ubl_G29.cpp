@@ -1573,14 +1573,16 @@
       else { // !do_3_pt_leveling
 
         bool zig_zag = false;
+        float z_probe[g29_grid_size][g29_grid_size];
         for (uint8_t ix = 0; ix < g29_grid_size; ix++) {
           const float rx = float(x_min) + ix * dx;
           for (int8_t iy = 0; iy < g29_grid_size; iy++) {
-            const float ry = float(y_min) + dy * (zig_zag ? g29_grid_size - 1 - iy : iy);
+              int8_t const iiy = zig_zag ? g29_grid_size - 1- iy : iy;  
+            const float ry = float(y_min) + dy * iiy;
 
             if (!abort_flag) {
               measured_z = probe_pt(rx, ry, parser.seen('E') ? PROBE_PT_STOW : PROBE_PT_RAISE, g29_verbose_level); // TODO: Needs error handling
-
+              
               abort_flag = isnan(measured_z);
 
               #if ENABLED(DEBUG_LEVELING_FEATURE)
@@ -1614,13 +1616,67 @@
                 serial_spaces(16);
                 SERIAL_ECHOLNPAIR("Corrected_Z=", measured_z);
               }
-              incremental_LSF(&lsf_results, rx, ry, measured_z);
+              z_probe[ix][iiy] = measured_z;
             }
           }
 
           zig_zag ^= true;
         }
+
+        // Correct mesh based on points (todo handle j>2)
+        for (uint8_t i = 0; i < GRID_MAX_POINTS_X; i++) {
+            for (uint8_t j = 0; j < GRID_MAX_POINTS_Y; j++) {
+                float x_tmp = mesh_index_to_xpos(i),
+                    y_tmp = mesh_index_to_ypos(j),
+                    z_tmp = z_values[i][j];
+
+#if ENABLED(DEBUG_LEVELING_FEATURE)
+                if (DEBUGGING(LEVELING)) {
+                    SERIAL_ECHOPGM("before rotation = [");
+                    SERIAL_PROTOCOL_F(x_tmp, 7);
+                    SERIAL_PROTOCOLCHAR(',');
+                    SERIAL_PROTOCOL_F(y_tmp, 7);
+                    SERIAL_PROTOCOLCHAR(',');
+                    SERIAL_PROTOCOL_F(z_tmp, 7);
+                    SERIAL_ECHOPGM("]   ---> ");
+                    safe_delay(20);
+                }
+#endif
+                
+                const float z1 = calc_z0(mesh_index_to_xpos(i),
+                                         x_min, z_probe[0][0],
+                                         x_max, z_probe[1][0]);
+                const float z2 = calc_z0(mesh_index_to_xpos(i),
+                                         x_min, z_probe[0][1],
+                                         x_max, z_probe[1][1]);
+                const float z0 = calc_z0(mesh_index_to_ypos(j),
+                                         y_min, z1,
+                                         y_max, z2);
+                
+                z_values[i][j] += z0;
+                
+#if ENABLED(DEBUG_LEVELING_FEATURE)
+                if (DEBUGGING(LEVELING)) {
+                    SERIAL_ECHOPGM("after correction = [");
+                    SERIAL_PROTOCOL_F(x_tmp, 7);
+                    SERIAL_PROTOCOLCHAR(',');
+                    SERIAL_PROTOCOL_F(y_tmp, 7);
+                    SERIAL_PROTOCOLCHAR(',');
+                    SERIAL_PROTOCOL_F(z_values[i][j], 7);
+                    SERIAL_ECHOLNPGM("]");
+                    safe_delay(55);
+                }
+#endif
+            }
+        }
+
+        STOW_PROBE();
+#ifdef Z_AFTER_PROBING
+        move_z_after_probing();
+#endif
+        return;
       }
+
       STOW_PROBE();
       #ifdef Z_AFTER_PROBING
         move_z_after_probing();
