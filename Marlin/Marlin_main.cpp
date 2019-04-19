@@ -2312,8 +2312,8 @@ void clean_up_after_endstop_or_probe_move() {
     // If Z isn't known then probe to -10mm.
     const float z_probe_low_point = TEST(axis_known_position, Z_AXIS) ? -zprobe_zoffset + Z_PROBE_LOW_POINT : -10.0;
 
-    // Double-probing does a fast probe followed by a slow probe
-    #if MULTIPLE_PROBING == 2
+    // Multiple-probing does a fast probe followed by N-1 slow probes
+    #if MULTIPLE_PROBING > 1
 
       // Do a first probe at the fast speed
       if (do_probe_move(z_probe_low_point, MMM_TO_MMS(Z_PROBE_SPEED_FAST))) {
@@ -2333,25 +2333,10 @@ void clean_up_after_endstop_or_probe_move() {
       #endif
 
       // move up to make clearance for the probe
-      do_blocking_move_to_z(current_position[Z_AXIS] + Z_CLEARANCE_MULTI_PROBE, MMM_TO_MMS(Z_PROBE_SPEED_FAST));
+      do_blocking_move_to_z(first_probe_z + Z_CLEARANCE_MULTI_PROBE, MMM_TO_MMS(Z_PROBE_SPEED_FAST));
 
-    #else
-
-      // If the nozzle is well over the travel height then
-      // move down quickly before doing the slow probe
-      float z = Z_CLEARANCE_DEPLOY_PROBE + 5.0;
-      if (zprobe_zoffset < 0) z -= zprobe_zoffset;
-
-      if (current_position[Z_AXIS] > z) {
-        // If we don't make it to the z position (i.e. the probe triggered), move up to make clearance for the probe
-        if (!do_probe_move(z, MMM_TO_MMS(Z_PROBE_SPEED_FAST)))
-          do_blocking_move_to_z(current_position[Z_AXIS] + Z_CLEARANCE_BETWEEN_PROBES, MMM_TO_MMS(Z_PROBE_SPEED_FAST));
-      }
-    #endif
-
-    #if MULTIPLE_PROBING > 2
-      float probes_total = 0;
-      for (uint8_t p = MULTIPLE_PROBING + 1; --p;) {
+      float z_probes[MULTIPLE_PROBING - 1];
+      for (int8_t p = MULTIPLE_PROBING - 2; p >= 0; --p) {
     #endif
 
         // move down slowly to find bed
@@ -2365,30 +2350,53 @@ void clean_up_after_endstop_or_probe_move() {
           return NAN;
         }
 
-    #if MULTIPLE_PROBING > 2
-        probes_total += current_position[Z_AXIS];
-        if (p > 1) do_blocking_move_to_z(current_position[Z_AXIS] + Z_CLEARANCE_MULTI_PROBE, MMM_TO_MMS(Z_PROBE_SPEED_FAST));
+    #if MULTIPLE_PROBING > 1
+        z_probes[p] = current_position[Z_AXIS];
+
+        #if ENABLED(DEBUG_LEVELING_FEATURE)
+          if (DEBUGGING(LEVELING)) {
+              SERIAL_ECHOLNPAIR("Probed value:", z_probes[p]);
+          }
+        #endif
+        
+        if (p > 0) do_blocking_move_to_z(current_position[Z_AXIS] + Z_CLEARANCE_MULTI_PROBE, MMM_TO_MMS(Z_PROBE_SPEED_FAST));
       }
-    #endif
 
-    #if MULTIPLE_PROBING > 2
+      /* Return the combined result. If we have 1 measurement, return
+       * it. If we have 2, return the average. If we have >2, return
+       * the average but with the min and max thrown out. */
 
-      // Return the average value of all probes
-      const float measured_z = probes_total * (1.0f / (MULTIPLE_PROBING));
-
-    #elif MULTIPLE_PROBING == 2
-
-      const float z2 = current_position[Z_AXIS];
-
-      #if ENABLED(DEBUG_LEVELING_FEATURE)
-        if (DEBUGGING(LEVELING)) {
-          SERIAL_ECHOPAIR("2nd Probe Z:", z2);
-          SERIAL_ECHOLNPAIR(" Discrepancy:", first_probe_z - z2);
+      #if MULTIPLE_PROBING > 3
+        int min=0;
+        int max=0;
+        for (uint8_t p = 1; p < MULTIPLE_PROBING - 1; ++p) {
+            if (z_probes[p]<z_probes[min]) min = p;
+            if (z_probes[p]>z_probes[max]) max = p;
         }
+
+        #if ENABLED(DEBUG_LEVELING_FEATURE)
+          if (DEBUGGING(LEVELING)) {
+              SERIAL_ECHOPAIR("Discarding min value:", z_probes[min]);
+              SERIAL_ECHOLNPAIR(", max value:", z_probes[max]);
+          }
+        #endif
+
+        z_probes[min] = NAN;
+        z_probes[max] = NAN;
+        
       #endif
 
-      // Return a weighted average of the fast and slow probes
-      const float measured_z = (z2 * 3.0 + first_probe_z * 2.0) * 0.2;
+        float probes_total = 0;
+        for (uint8_t p = 0; p < MULTIPLE_PROBING - 1; ++p) {
+            if (z_probes[p]==z_probes[p])
+                probes_total += z_probes[p];
+        }
+
+        /* Return the average value of all valid probes. In the
+         * unlikely case we probed the exact same value for all
+         * probes, make sure we divide by the correct value. */
+        const float measured_z = probes_total *
+            (1.0f / (MULTIPLE_PROBING > 3 ? MULTIPLE_PROBING-3 + (min==max ? 1 : 0) : MULTIPLE_PROBING));
 
     #else
 
@@ -2397,6 +2405,12 @@ void clean_up_after_endstop_or_probe_move() {
 
     #endif
 
+    #if ENABLED(DEBUG_LEVELING_FEATURE)
+      if (DEBUGGING(LEVELING)) {
+          SERIAL_ECHOLNPAIR("Measured z:", measured_z);
+      }
+    #endif
+      
     #if ENABLED(DEBUG_LEVELING_FEATURE)
       if (DEBUGGING(LEVELING)) DEBUG_POS("<<< run_z_probe", current_position);
     #endif

@@ -717,7 +717,7 @@
 #define Z_MIN_PROBE_PIN 22
 
 /* Don't go lower than this when probing. */
-#define Z_MIN_PROBE_Z -1.5
+#define Z_MIN_PROBE_Z -1.0
 
 /**
  * Probe Type
@@ -806,7 +806,7 @@
 #define MIN_PROBE_EDGE 10
 
 // X and Y axis travel speed (mm/m) between probes
-#define XY_PROBE_SPEED 8000
+#define XY_PROBE_SPEED 15000
 
 // Feedrate (mm/m) for the first approach when double-probing (MULTIPLE_PROBING == 2)
 #define Z_PROBE_SPEED_FAST HOMING_FEEDRATE_Z
@@ -817,7 +817,7 @@
 // The number of probes to perform at each point.
 //   Set to 2 for a fast/slow probe, using the second probe result.
 //   Set to 3 or more for slow probes, averaging the results.
-#define MULTIPLE_PROBING 2
+#define MULTIPLE_PROBING 4
 
 /**
  * Z probes require clearance when deploying, stowing, and moving between
@@ -833,8 +833,8 @@
  * Example: `M851 Z-5` with a CLEARANCE of 4  =>  9mm from bed to nozzle.
  *     But: `M851 Z+1` with a CLEARANCE of 2  =>  2mm from bed to nozzle.
  */
-#define Z_CLEARANCE_DEPLOY_PROBE   5 // Z Clearance for Deploy/Stow
-#define Z_CLEARANCE_BETWEEN_PROBES  3 // Z Clearance between probe points
+#define Z_CLEARANCE_DEPLOY_PROBE   2 // Z Clearance for Deploy/Stow
+#define Z_CLEARANCE_BETWEEN_PROBES  2 // Z Clearance between probe points
 #define Z_CLEARANCE_MULTI_PROBE     1 // Z Clearance between multiple probes
 #define Z_AFTER_PROBING           5 // Z position after probing is done
 
