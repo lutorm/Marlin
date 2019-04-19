@@ -1360,7 +1360,22 @@ void Temperature::init() {
         case TIMER3A: case TIMER3B: case TIMER3C: _SET_CS(3, val); break;
       #endif
       #ifdef TCCR4A
-        case TIMER4A: case TIMER4B: case TIMER4C: _SET_CS(4, val); break;
+        case TIMER4A: case TIMER4B: case TIMER4C:
+         TCCR4B &= ~(_BV(CS40) | _BV(CS41) | _BV(CS42));
+         TCCR4A &= ~(_BV(WGM41) | _BV(WGM40));
+         TCCR4B &= ~(_BV(WGM42) | _BV(WGM43));
+          TCCR4A |=   B00000000;
+         TCCR4A &= ~(B00000011);
+                       //32
+         _SET_CS(4, val);
+         TCCR4B |=   B00010000;
+         TCCR4B &= ~(B00001000);
+         //WGM3:0 == B1000 == 8 <- Mode 8 PWM phase and frequency correct
+                               //check atmega2560 datasheet page 145 table 17-2
+
+         ICR4 = 65535; // (2^16-1) is the top of the counter
+
+         break;
       #endif
       #ifdef TCCR5A
         case TIMER5A: case TIMER5B: case TIMER5C: _SET_CS(5, val); break;
