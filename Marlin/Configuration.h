@@ -436,11 +436,19 @@
  * When set to any value below 255, enables a form of PWM to the bed that acts like a divider
  * so don't use it unless you are OK with PWM on your bed. (See the comment on enabling PIDTEMPBED)
  */
-#define MAX_BED_POWER 206 // limits duty cycle to bed; 255=full current
+
+// 100 IS current limited for the 6A standard input fuse on the TAZ6
+#define MAX_BED_POWER 255 // limits duty cycle to bed; 255=full current
 
 #if ENABLED(PIDTEMPBED)
 
   //#define PID_BED_DEBUG // Sends debug data to the serial port
+
+
+  // 110V 1100W E3D high temp bed on 3mm borosilicate
+  #define DEFAULT_bedKp 80.01
+  #define DEFAULT_bedKi 12.85
+  #define DEFAULT_bedKd 124.53
 
   //24V 360W silicone heater from NPH on 3mm borosilicate (TAZ 2.2+)
   #define DEFAULT_bedKp 162
@@ -626,7 +634,8 @@
  * Override with M92
  *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4]]]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 100.5, 100.5, 1600, 420 }
+// 420 default e3d titan aero value, calibrated to 403.8 on PC-max
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 100.5, 100.5, 1600, 403.8 }
 
 /**
  * Default Max Feed Rate (mm/s)
@@ -1173,7 +1182,7 @@
 // For DELTA this is the top-center of the Cartesian print volume.
 //#define MANUAL_X_HOME_POS 0
 //#define MANUAL_Y_HOME_POS 0
-#define MANUAL_Z_HOME_POS -0.25
+#define MANUAL_Z_HOME_POS 1.25
 
 // Use "Z Safe Homing" to avoid homing with a Z probe outside the bed area.
 //
@@ -1187,7 +1196,7 @@
 #define Z_SAFE_HOMING
 
 #if ENABLED(Z_SAFE_HOMING)
-  #define Z_SAFE_HOMING_X_POINT (-12)    // X point for Z homing when homing all axis (G28).
+  #define Z_SAFE_HOMING_X_POINT (-13)    // X point for Z homing when homing all axis (G28).
   #define Z_SAFE_HOMING_Y_POINT (266)    // Y point for Z homing when homing all axis (G28).
 #endif
 
