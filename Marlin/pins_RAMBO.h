@@ -196,8 +196,7 @@
 
     #else // !VIKI2 && !miniVIKI
 
-      #define BEEPER_PIN   79   // AUX-4
-
+      #define BEEPER_PIN   79 
       // AUX-2
       #define BTN_EN1      76
       #define BTN_EN2      77
