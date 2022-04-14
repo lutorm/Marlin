@@ -383,9 +383,14 @@
 //      #define DEFAULT_Kd 61.93
 
 // Titan Aero w Volcano hotend (autotuned)
-#define DEFAULT_Kp 34.47
-#define DEFAULT_Ki 3.83
-#define DEFAULT_Kd 77.65
+//#define DEFAULT_Kp 34.47
+//#define DEFAULT_Ki 3.83
+//#define DEFAULT_Kd 77.65
+
+// Titan Aero w Volcano hotend and e3d 65W heater(autotuned)
+#define DEFAULT_Kp 15
+#define DEFAULT_Ki 1.3
+#define DEFAULT_Kd 42
 
 // LulzBot AO-Hexagon (24v)
 //#define DEFAULT_Kp 28.79
@@ -446,14 +451,14 @@
 
 
   // 110V 1100W E3D high temp bed on 3mm borosilicate
-  #define DEFAULT_bedKp 80.01
-  #define DEFAULT_bedKi 12.85
-  #define DEFAULT_bedKd 124.53
+  #define DEFAULT_bedKp 89
+  #define DEFAULT_bedKi 14.3
+  #define DEFAULT_bedKd 138
 
   //24V 360W silicone heater from NPH on 3mm borosilicate (TAZ 2.2+)
-  #define DEFAULT_bedKp 162
-  #define DEFAULT_bedKi 17
-  #define DEFAULT_bedKd 378
+  //#define DEFAULT_bedKp 162
+  //#define DEFAULT_bedKi 17
+  //#define DEFAULT_bedKd 378
 
   //120V 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
   //from FOPDT model - kp=.39 Tp=405 Tdead=66, Tc set to 79.2, aggressive factor of .15 (vs .1, 1, 10)
