@@ -923,11 +923,11 @@
 #define Y_BED_SIZE 297
 
 // Travel limits (mm) after homing, corresponding to endstop positions.
-#define X_MIN_POS (-13 + 0)
-#define Y_MIN_POS (-13 + 0)
+#define X_MIN_POS (-12 + 0)
+#define Y_MIN_POS (-14 + 0)
 #define Z_MIN_POS (0 + 0)
-#define X_MAX_POS (306 + 0)
-#define Y_MAX_POS (307 + 0)
+#define X_MAX_POS (302 + 0)
+#define Y_MAX_POS (306 + 0)
 #define Z_MAX_POS (250 + 0)
 
 /**
@@ -1065,9 +1065,9 @@
 
   // Set the boundaries for probing (where the probe can reach).
   #define LEFT_PROBE_BED_POSITION 1
-  #define RIGHT_PROBE_BED_POSITION 295
+  #define RIGHT_PROBE_BED_POSITION 299
   #define FRONT_PROBE_BED_POSITION 1
-  #define BACK_PROBE_BED_POSITION 295
+  #define BACK_PROBE_BED_POSITION 299
 
   // Need to override probe min/max as well since it's outside of the bed
   #define MIN_PROBE_X X_MIN_POS
@@ -1187,7 +1187,7 @@
 // For DELTA this is the top-center of the Cartesian print volume.
 //#define MANUAL_X_HOME_POS 0
 //#define MANUAL_Y_HOME_POS 0
-#define MANUAL_Z_HOME_POS 1.25
+#define MANUAL_Z_HOME_POS 0
 
 // Use "Z Safe Homing" to avoid homing with a Z probe outside the bed area.
 //
@@ -1201,7 +1201,7 @@
 #define Z_SAFE_HOMING
 
 #if ENABLED(Z_SAFE_HOMING)
-  #define Z_SAFE_HOMING_X_POINT (-13)    // X point for Z homing when homing all axis (G28).
+  #define Z_SAFE_HOMING_X_POINT (-12)    // X point for Z homing when homing all axis (G28).
   #define Z_SAFE_HOMING_Y_POINT (266)    // Y point for Z homing when homing all axis (G28).
 #endif
 
