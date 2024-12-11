@@ -115,7 +115,8 @@
 //
 // Temperature Sensors
 //
-#define TEMP_0_PIN          0   // Analog Input
+//#define TEMP_0_PIN          0   // Analog Input
+#define TEMP_0_PIN          4   // PT100 board hooked up to A4 on X40 analog header
 #define TEMP_1_PIN          1   // Analog Input
 #define TEMP_BED_PIN        2   // Analog Input
 
